@@ -7,6 +7,9 @@ public class Snake : MonoBehaviour {
 	private GameObject head;
 	private LinkedList<GameObject> body = new LinkedList<GameObject>();
 
+	private int width = 10;
+	private int height = 10;
+
 	public const int DIR_UP = 0;
 	public const int DIR_RIGHT = 1;
 	public const int DIR_DOWN = 2;
@@ -53,14 +56,14 @@ public class Snake : MonoBehaviour {
 	void FixedUpdate () {
 		dir = nextDir;
 
-		moveHead ();
-		moveBody ();
+		var delta = getPositionDelta ();
+		var pos = moveHead (delta);
+		moveBody (pos);
 	}
 
-	void moveHead() {
-
+	Vector3 getPositionDelta() {
+		
 		Vector3 delta = new Vector3 (0, 0, 0);
-
 		switch(dir)
 		{
 		case DIR_UP:
@@ -76,15 +79,41 @@ public class Snake : MonoBehaviour {
 			delta.x = 1;
 			break;
 		}
-
-		head.transform.Translate (delta);
+		return delta;
 	}
 
-	void moveBody() {
+	void ensureWithinMap(ref GameObject go, int width, int height) {
+
+		var pos = go.transform.position;
+
+		if (pos.x > width) {
+			pos.x = -width;
+		} else if (pos.x < -width) {
+			pos.x = width;
+		}
+
+		if (pos.y > height) {
+			pos.y = -height;
+		} else if (pos.y < -height) {
+			pos.y = height;
+		}
+
+		go.transform.position = pos;
+	}
+
+	Vector3 moveHead(Vector3 delta) {
+
+		var pos = head.transform.position;
+
+		head.transform.Translate (delta);
+		ensureWithinMap (ref head, width, height);
+		return pos;
+	}
+
+	void moveBody(Vector3 pos) {
 		var first = newNode ();
-		first.transform.position = transform.position;
+		first.transform.position = pos;
 		body.AddFirst (first);
-		transform.position = head.transform.position;
 
 		if (inc > 0) {
 			inc--;
@@ -111,6 +140,8 @@ public class Snake : MonoBehaviour {
 	GameObject newHead() {
 
 		var head = new GameObject ();
+		head.name = "snakeHead";
+
 		head.AddComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Circle");
 		head.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
 
@@ -127,6 +158,7 @@ public class Snake : MonoBehaviour {
 	GameObject newNode() {
 
 		var node = new GameObject ();
+		node.name = "snakeBodyNode";
 		node.tag = "snakeBodyNode";
 
 		var renderer = node.AddComponent<SpriteRenderer> ();

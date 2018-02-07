@@ -8,6 +8,10 @@ public class WorldDominator : MonoBehaviour {
 
 	private int foodFlush = 5;
 	private int foodIndex = 3;
+
+	public int Width = 10;
+	public int Height = 10;
+
 	void tryGenerateFood() {
 		Debug.Log (foodIndex);
 		if (foodFlush > 0) {
@@ -19,13 +23,14 @@ public class WorldDominator : MonoBehaviour {
 			foodIndex = (int)(Random.value * 25);
 		}
 
-		var x = (Random.value - 0.5f) * 20;
-		var y = (Random.value - 0.5f) * 20;
+		var x = (Random.value - 0.5f) * Width * 2;
+		var y = (Random.value - 0.5f) * Height * 2;
 		newFood (x, y);
 	}
 
 	GameObject newFood(float x, float y) {
 		var food = new GameObject ();
+		food.name = "snakeFood";
 		food.tag = "snakeFood";
 
 		var renderer = food.AddComponent<SpriteRenderer> ();
