@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour {
 
+	private GameObject head;
 	private LinkedList<GameObject> body = new LinkedList<GameObject>();
 
 	public const int DIR_UP = 0;
@@ -13,15 +14,14 @@ public class Snake : MonoBehaviour {
 
 	private int inc = 6;
 
-	public int state = 0;
+	private int dir = 0;
+	private int nextDir = 0;
 
 	void Start () {
-		state = DIR_UP;
+		dir = DIR_UP;
 
-		var head = new GameObject ();
-		head.AddComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Circle");
+		head = newHead ();
 		head.transform.position = this.transform.position;
-		body.AddFirst (head);
 	}
 
 	void OnGUI() {
@@ -31,28 +31,29 @@ public class Snake : MonoBehaviour {
 		bool left = Input.GetKeyDown (KeyCode.LeftArrow);
 		bool right = Input.GetKeyDown (KeyCode.RightArrow);
 
-		if (up && state != DIR_DOWN) {
-			state = DIR_UP;
-		} else if (down && state != DIR_UP) {
-			state = DIR_DOWN;
-		} else if (right && state != DIR_LEFT) {
-			state = DIR_RIGHT;
-		} else if (left && state != DIR_RIGHT) {
-			state = DIR_LEFT;
+		if (up && dir != DIR_DOWN) {
+			nextDir = DIR_UP;
+		} else if (down && dir != DIR_UP) {
+			nextDir = DIR_DOWN;
+		} else if (right && dir != DIR_LEFT) {
+			nextDir = DIR_RIGHT;
+		} else if (left && dir != DIR_RIGHT) {
+			nextDir = DIR_LEFT;
 		}
 	}
 
 	void FixedUpdate () {
-		Debug.Log (inc);
+		dir = nextDir;
+
 		moveHead ();
-		moveTail ();
+		moveBody ();
 	}
 
 	void moveHead() {
 
 		Vector3 delta = new Vector3 (0, 0, 0);
 
-		switch(state)
+		switch(dir)
 		{
 		case DIR_UP:
 			delta.y = 1;
@@ -68,14 +69,15 @@ public class Snake : MonoBehaviour {
 			break;
 		}
 
-		var head = new GameObject ();
-		head.AddComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Circle");
-		head.transform.position = transform.position + delta;
-		body.AddFirst (head);
-		transform.Translate (delta);
+		head.transform.Translate (delta);
 	}
 
-	void moveTail() {
+	void moveBody() {
+		var first = newNode ();
+		first.transform.position = transform.position;
+		body.AddFirst (first);
+		transform.position = head.transform.position;
+
 		if (inc > 0) {
 			inc--;
 			return;
@@ -83,5 +85,33 @@ public class Snake : MonoBehaviour {
 		var last = body.Last;
 		body.RemoveLast ();
 		Destroy (last.Value);
+	}
+
+	GameObject newHead() {
+
+		var head = new GameObject ();
+		head.AddComponent<SpriteRenderer> ().sprite = Resources.Load<Sprite> ("Circle");
+		head.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
+
+		var collider = head.AddComponent<CircleCollider2D> ();
+		collider.isTrigger = true;
+		collider.radius = 0.4f;
+
+		head.AddComponent<Head> ().enabled = true;
+		return head;
+	}
+
+	GameObject newNode() {
+
+		var node = new GameObject ();
+		var renderer = node.AddComponent<SpriteRenderer> ();
+		renderer.sprite = Resources.Load<Sprite> ("Circle");
+		renderer.color = Color.gray;
+
+		node.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
+		var collider = node.AddComponent<CircleCollider2D> ();
+		collider.isTrigger = true;
+		collider.radius = 0.4f;
+		return node;
 	}
 }
