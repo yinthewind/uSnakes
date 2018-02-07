@@ -25,6 +25,7 @@ public class Snake : MonoBehaviour {
 	}
 
 	void OnDestroy() {
+
 		Destroy (head);
 		foreach (var node in body) {
 			Destroy (node);
@@ -98,11 +99,13 @@ public class Snake : MonoBehaviour {
 
 		switch (e.tag) {
 		case "snakeBodyNode":
-			Destroy (this);
+			Destroy (this.gameObject);
+			break;
+		case "snakeFood":
+			inc++;
+			Destroy (e.gameObject);
 			break;
 		}
-
-		Debug.Log ("From snake" + e);
 	}
 
 	GameObject newHead() {
