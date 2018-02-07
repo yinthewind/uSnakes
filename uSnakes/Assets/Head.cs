@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : MonoBehaviour {
+public class Head : MonoBehaviour {
+
+	public delegate void OnEvent(Collider2D e);
+	public OnEvent OnTriggerEnterEvent;
 
 	// Use this for initialization
 	void Start () {
@@ -15,6 +18,6 @@ public class Node : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D e) {
-		Debug.Log (e);
+		OnTriggerEnterEvent (e);
 	}
 }

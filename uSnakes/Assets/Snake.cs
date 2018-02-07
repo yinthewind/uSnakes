@@ -24,6 +24,13 @@ public class Snake : MonoBehaviour {
 		head.transform.position = this.transform.position;
 	}
 
+	void OnDestroy() {
+		Destroy (head);
+		foreach (var node in body) {
+			Destroy (node);
+		}
+	}
+
 	void OnGUI() {
 
 		bool up = Input.GetKeyDown (KeyCode.UpArrow);
@@ -87,6 +94,17 @@ public class Snake : MonoBehaviour {
 		Destroy (last.Value);
 	}
 
+	void OnTriggerEnterEvent(Collider2D e) {
+
+		switch (e.tag) {
+		case "snakeBodyNode":
+			Destroy (this);
+			break;
+		}
+
+		Debug.Log ("From snake" + e);
+	}
+
 	GameObject newHead() {
 
 		var head = new GameObject ();
@@ -97,18 +115,21 @@ public class Snake : MonoBehaviour {
 		collider.isTrigger = true;
 		collider.radius = 0.4f;
 
-		head.AddComponent<Head> ().enabled = true;
+		var script = head.AddComponent<Head> ();
+		script.OnTriggerEnterEvent += OnTriggerEnterEvent;
+
 		return head;
 	}
 
 	GameObject newNode() {
 
 		var node = new GameObject ();
+		node.tag = "snakeBodyNode";
+
 		var renderer = node.AddComponent<SpriteRenderer> ();
 		renderer.sprite = Resources.Load<Sprite> ("Circle");
 		renderer.color = Color.gray;
 
-		node.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
 		var collider = node.AddComponent<CircleCollider2D> ();
 		collider.isTrigger = true;
 		collider.radius = 0.4f;
