@@ -7,8 +7,7 @@ public class Snake : MonoBehaviour {
 	private GameObject head;
 	private LinkedList<GameObject> body = new LinkedList<GameObject>();
 
-	private int width = 10;
-	private int height = 10;
+	private GameObject worldDominator;
 
 	public const int DIR_UP = 0;
 	public const int DIR_RIGHT = 1;
@@ -105,8 +104,19 @@ public class Snake : MonoBehaviour {
 
 		var pos = head.transform.position;
 
-		head.transform.Translate (delta);
-		ensureWithinMap (ref head, width, height);
+		if (worldDominator == null) {
+			worldDominator = GameObject.Find ("WorldDominator");
+		}
+
+		if (worldDominator != null) {
+
+			var width = worldDominator.GetComponent<WorldDominator> ().Width;
+			var height = worldDominator.GetComponent<WorldDominator> ().Height;
+
+			head.transform.Translate (delta);
+			ensureWithinMap (ref head, width, height);
+		}
+
 		return pos;
 	}
 
