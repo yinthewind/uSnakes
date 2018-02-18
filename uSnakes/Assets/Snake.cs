@@ -14,7 +14,7 @@ public class Snake : MonoBehaviour {
 	public const int DIR_DOWN = 2;
 	public const int DIR_LEFT = 3;
 
-	private int inc = 6;
+	private int inc = 9;
 
 	private int dir = 0;
 	private int nextDir = 0;
@@ -156,7 +156,7 @@ public class Snake : MonoBehaviour {
 		head.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
 
 		var collider = head.AddComponent<CircleCollider2D> ();
-		collider.isTrigger = true;
+		//collider.isTrigger = true;
 		collider.radius = 0.4f;
 
 		var script = head.AddComponent<Head> ();
@@ -174,6 +174,8 @@ public class Snake : MonoBehaviour {
 		var renderer = node.AddComponent<SpriteRenderer> ();
 		renderer.sprite = Resources.Load<Sprite> ("Circle");
 		renderer.color = Color.gray;
+
+		node.AddComponent<Rigidbody2D> ().bodyType = RigidbodyType2D.Kinematic;
 
 		var collider = node.AddComponent<CircleCollider2D> ();
 		collider.isTrigger = true;

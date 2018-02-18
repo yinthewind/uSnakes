@@ -10,4 +10,8 @@ public class Head : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D e) {
 		OnTriggerEnterEvent (e);
 	}
+
+	void OnCollisionEnter2D(Collision2D coll) {
+		OnTriggerEnterEvent(null);
+	}
 }
